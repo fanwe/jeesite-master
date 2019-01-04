@@ -1,0 +1,1 @@
+½âÑ¹µ½Tesseract-OCR\tessdataÄ¿Â¼

@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.order.dao.ShopOrderDao">
+    
+	<sql id="shopOrderColumns">
+		a.id AS "id",
+		a.orderno AS "orderno",
+		a.userid AS "userid",
+		a.paytype AS "paytype",
+		a.paystatus AS "paystatus",
+		a.orderstatus AS "orderstatus",
+		a.amcount AS "amcount",
+		a.fee AS "fee",
+		a.quantity AS "quantity",
+		a.city AS "city",
+		a.address AS "address",
+		a.expressno AS "expressno",
+		a.expresscompanyname AS "expresscompanyname",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.description AS "description",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		b.name AS "cityName",
+		c.usernickname as "username"
+	</sql>
+	
+	<sql id="shopOrderJoins">
+		left join sys_area b on b.id=a.city
+		left join shop_user c on c.id=a.userid
+	</sql>
+    
+	<select id="get" resultType="ShopOrder">
+		SELECT 
+			<include refid="shopOrderColumns"/>
+		FROM shop_order a
+		<include refid="shopOrderJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ShopOrder">
+		SELECT 
+			<include refid="shopOrderColumns"/>
+		FROM shop_order a
+		<include refid="shopOrderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="orderstatus != null and orderstatus != ''">
+			and a.orderstatus=#{orderstatus} 
+			</if>
+			<if test="username != null and username != ''">
+				AND a.username LIKE 
+					<if test="dbName == 'oracle'">'%'||#{username}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{username}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{username},'%')</if>
+			</if>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+				
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ShopOrder">
+		SELECT 
+			<include refid="shopOrderColumns"/>
+		FROM shop_order a
+		<include refid="shopOrderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO shop_order(
+			id,
+			orderno,
+			userid,
+			paytype,
+			paystatus,
+			orderstatus,
+			amcount,
+			fee,
+			quantity,
+			city,
+			address,
+			expressno,
+			expresscompanyname,
+			create_by,
+			create_date,
+			description,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{orderno},
+			#{userid},
+			#{paytype},
+			#{paystatus},
+			#{orderstatus},
+			#{amcount},
+			#{fee},
+			#{quantity},
+			#{city},
+			#{address},
+			#{expressno},
+			#{expresscompanyname},
+			#{createBy.id},
+			#{createDate},
+			#{description},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE shop_order SET 	
+			orderno = #{orderno},
+			userid = #{userid},
+			paytype = #{paytype},
+			paystatus=#{paystatus},
+			orderstatus = #{orderstatus},
+			amcount = #{amcount},
+			fee = #{fee},
+			quantity = #{quantity},
+			city = #{city},
+			address = #{address},
+			expressno = #{expressno},
+			expresscompanyname = #{expresscompanyname},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE shop_order SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

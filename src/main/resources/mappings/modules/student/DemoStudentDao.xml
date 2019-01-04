@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.student.dao.DemoStudentDao">
+    
+	<sql id="demoStudentColumns">
+		a.id AS "id",
+		a.student_name AS "studentName",
+		a.student_age AS "studentAge",
+		a.student_sex AS "studentSex",
+		a.class_id AS "classId",
+		b.class_name AS "className",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="demoStudentJoins">
+		left join demo_classes as b on b.id=a.class_id
+	</sql>
+    
+	<select id="get" resultType="DemoStudent">
+		SELECT 
+			<include refid="demoStudentColumns"/>
+		FROM demo_student a
+		<include refid="demoStudentJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="DemoStudent">
+		SELECT 
+			<include refid="demoStudentColumns"/>
+		FROM demo_student a
+		<include refid="demoStudentJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="DemoStudent">
+		SELECT 
+			<include refid="demoStudentColumns"/>
+		FROM demo_student a
+		<include refid="demoStudentJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO demo_student(
+			id,
+			student_name,
+			student_age,
+			student_sex,
+			class_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{studentName},
+			#{studentAge},
+			#{studentSex},
+			#{classId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE demo_student SET 	
+			student_name = #{studentName},
+			student_age = #{studentAge},
+			student_sex = #{studentSex},
+			class_id = #{classId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE demo_student SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

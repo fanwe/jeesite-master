@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.companyinfo.dao.CompanyIntroductionDao">
+    
+	<sql id="companyIntroductionColumns">
+		a.id AS "id",
+		a.file_title AS "fileTitle",
+		a.company_legal_chinese_name AS "companyLegalChineseName",
+		a.company_legal_english_name AS "companyLegalEnglishName",
+		a.business_scope AS "businessScope",
+		a.accounting_firm AS "accountingFirm",
+		a.situation_issued_bonds AS "situationIssuedBonds",
+		a.accounting_director AS "accountingDirector",
+		a.organization_accounting_director AS "organizationAccountingDirector",
+		a.bond_is AS "bondIs",
+		a.end_listing_top10_holders AS "endListingTop10Holders",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="companyIntroductionJoins">
+	</sql>
+    
+	<select id="get" resultType="CompanyIntroduction">
+		SELECT 
+			<include refid="companyIntroductionColumns"/>
+		FROM company_introduction a
+		<include refid="companyIntroductionJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getFileName" resultType="CompanyIntroduction">
+		SELECT 
+			<include refid="companyIntroductionColumns"/>
+		FROM company_introduction a
+		<include refid="companyIntroductionJoins"/>
+		WHERE a.file_title = #{fileName}
+	</select>
+	
+	<select id="findList" resultType="CompanyIntroduction">
+		SELECT 
+			<include refid="companyIntroductionColumns"/>
+		FROM company_introduction a
+		<include refid="companyIntroductionJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CompanyIntroduction">
+		SELECT 
+			<include refid="companyIntroductionColumns"/>
+		FROM company_introduction a
+		<include refid="companyIntroductionJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO company_introduction(
+			id,
+			file_title,
+			company_legal_chinese_name,
+			company_legal_english_name,
+			business_scope,
+			accounting_firm,
+			situation_issued_bonds,
+			accounting_director,
+			organization_accounting_director,
+			bond_is,
+			end_listing_top10_holders,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{fileTitle},
+			#{companyLegalChineseName},
+			#{companyLegalEnglishName},
+			#{businessScope},
+			#{accountingFirm},
+			#{situationIssuedBonds},
+			#{accountingDirector},
+			#{organizationAccountingDirector},
+			#{bondIs},
+			#{endListingTop10Holders},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE company_introduction SET 	
+			file_title = #{fileTitle},
+			company_legal_chinese_name = #{companyLegalChineseName},
+			company_legal_english_name = #{companyLegalEnglishName},
+			business_scope = #{businessScope},
+			accounting_firm = #{accountingFirm},
+			situation_issued_bonds = #{situationIssuedBonds},
+			accounting_director = #{accountingDirector},
+			organization_accounting_director = #{organizationAccountingDirector},
+			bond_is = #{bondIs},
+			end_listing_top10_holders = #{endListingTop10Holders},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE company_introduction SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

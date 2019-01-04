@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.companyinfoyear.dao.CompanyIntroductionYearDao">
+    
+	<sql id="companyIntroductionYearColumns">
+		a.id AS "id",
+		a.create_date AS "createDate",
+		a.file_name AS "fileName",
+		a.title AS "title",
+		a.chinese_name_of_company AS "chineseNameOfCompany",
+		a.english_name_of_company AS "englishNameOfCompany",
+		a.manage_scope_company AS "manageScopeCompany",
+		a.accounting_firm AS "accountingFirm",
+		a.chinese_cpa_1 AS "chineseCpa1",
+		a.chinese_cpa_2 AS "chineseCpa2",
+		a.accounting_director AS "accountingDirector",
+		a.organization_accounting_director AS "organizationAccountingDirector",
+		a.director_supervisor_topmanager_intro AS "directorSupervisorTopmanagerIntro",
+		a.lead_underwriter_1 AS "leadUnderwriter1",
+		a.lead_underwriter_2 AS "leadUnderwriter2",
+		a.credit_rating_agencies AS "creditRatingAgencies",
+		a.release_time AS "releaseTime",
+		a.charge AS "charge",
+		a.engage_dismiss_accounting_firm AS "engageDismissAccountingFirm",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="companyIntroductionYearJoins">
+	</sql>
+    
+	<select id="get" resultType="CompanyIntroductionYear">
+		SELECT 
+			<include refid="companyIntroductionYearColumns"/>
+		FROM company_introduction_year a
+		<include refid="companyIntroductionYearJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findByRecordCount" resultType="java.lang.Integer">
+		SELECT 
+			count(a.file_name)
+		FROM company_introduction_year a
+		<include refid="companyIntroductionYearJoins"/>
+		WHERE a.file_name = #{pdfFile}
+	</select>
+	
+	
+	<select id="findList" resultType="CompanyIntroductionYear">
+		SELECT 
+			<include refid="companyIntroductionYearColumns"/>
+		FROM company_introduction_year a
+		<include refid="companyIntroductionYearJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="fileName != null and fileName != ''">
+				AND a.file_name = #{fileName}
+			</if>
+			<if test="title != null and title != ''">
+				AND a.title LIKE 
+					<if test="dbName == 'oracle'">'%'||#{title}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{title}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{title},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CompanyIntroductionYear">
+		SELECT 
+			<include refid="companyIntroductionYearColumns"/>
+		FROM company_introduction_year a
+		<include refid="companyIntroductionYearJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO company_introduction_year(
+			id,
+			create_date,
+			file_name,
+			title,
+			chinese_name_of_company,
+			english_name_of_company,
+			manage_scope_company,
+			accounting_firm,
+			chinese_cpa_1,
+			chinese_cpa_2,
+			accounting_director,
+			organization_accounting_director,
+			director_supervisor_topmanager_intro,
+			lead_underwriter_1,
+			lead_underwriter_2,
+			credit_rating_agencies,
+			release_time,
+			charge,
+			engage_dismiss_accounting_firm,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{createDate},
+			#{fileName},
+			#{title},
+			#{chineseNameOfCompany},
+			#{englishNameOfCompany},
+			#{manageScopeCompany},
+			#{accountingFirm},
+			#{chineseCpa1},
+			#{chineseCpa2},
+			#{accountingDirector},
+			#{organizationAccountingDirector},
+			#{directorSupervisorTopmanagerIntro},
+			#{leadUnderwriter1},
+			#{leadUnderwriter2},
+			#{creditRatingAgencies},
+			#{releaseTime},
+			#{charge},
+			#{engageDismissAccountingFirm},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE company_introduction_year SET 	
+			file_name = #{fileName},
+			title = #{title},
+			chinese_name_of_company = #{chineseNameOfCompany},
+			english_name_of_company = #{englishNameOfCompany},
+			manage_scope_company = #{manageScopeCompany},
+			accounting_firm = #{accountingFirm},
+			chinese_cpa_1 = #{chineseCpa1},
+			chinese_cpa_2 = #{chineseCpa2},
+			accounting_director = #{accountingDirector},
+			organization_accounting_director = #{organizationAccountingDirector},
+			director_supervisor_topmanager_intro = #{directorSupervisorTopmanagerIntro},
+			lead_underwriter_1 = #{leadUnderwriter1},
+			lead_underwriter_2 = #{leadUnderwriter2},
+			credit_rating_agencies = #{creditRatingAgencies},
+			release_time = #{releaseTime},
+			charge = #{charge},
+			engage_dismiss_accounting_firm = #{engageDismissAccountingFirm},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE company_introduction_year SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

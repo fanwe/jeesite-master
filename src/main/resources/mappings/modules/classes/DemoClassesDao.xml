@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.classes.dao.DemoClassesDao">
+    
+	<sql id="demoClassesColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.class_name AS "className"
+	</sql>
+	
+	<sql id="demoClassesJoins">
+	</sql>
+    
+	<select id="get" resultType="DemoClasses">
+		SELECT 
+			<include refid="demoClassesColumns"/>
+		FROM demo_classes a
+		<include refid="demoClassesJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="DemoClasses">
+		SELECT 
+			<include refid="demoClassesColumns"/>
+		FROM demo_classes a
+		<include refid="demoClassesJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="className != null and className != ''">
+				AND a.class_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{className}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{className}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{className},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="DemoClasses">
+		SELECT 
+			<include refid="demoClassesColumns"/>
+		FROM demo_classes a
+		<include refid="demoClassesJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO demo_classes(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			class_name
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{className}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE demo_classes SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			class_name = #{className}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE demo_classes SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

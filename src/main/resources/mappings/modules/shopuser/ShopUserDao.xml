@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.shopuser.dao.ShopUserDao">
+    
+	<sql id="shopUserColumns">
+		a.id AS "id",
+		a.username AS "username",
+		a.usernickname AS "usernickname",
+		a.password AS "password",
+		a.email AS "email",
+		a.phone AS "phone",
+		a.question AS "question",
+		a.answer AS "answer",
+		a.lastlogintime AS "lastlogintime",
+		a.lastloginip AS "lastloginip",
+		a.regeistdate AS "regeistdate",
+		a.userlevel AS "userlevel",
+		a.islock AS "islock",
+		a.description AS "description",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		b.name AS "userlevelname"
+	</sql>
+	
+	<sql id="shopUserJoins">
+		left join shop_userlevel b on b.id = a.userlevel
+	</sql>
+    
+	<select id="get" resultType="ShopUser">
+		SELECT 
+			<include refid="shopUserColumns"/>
+		FROM shop_user a
+		<include refid="shopUserJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ShopUser">
+		SELECT 
+			<include refid="shopUserColumns"/>
+		FROM shop_user a
+		<include refid="shopUserJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			and
+			a.islock=#{islock}
+			<if test="username != null and username != ''">
+				AND a.username LIKE 
+					<if test="dbName == 'oracle'">'%'||#{username}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{username}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{username},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ShopUser">
+		SELECT 
+			<include refid="shopUserColumns"/>
+		FROM shop_user a
+		<include refid="shopUserJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			and
+			a.islock=#{islock}
+			<if test="username != null and username != ''">
+				AND a.username LIKE 
+					<if test="dbName == 'oracle'">'%'||#{username}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{username}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{username},'%')</if>
+			</if>
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO shop_user(
+			id,
+			username,
+			usernickname,
+			password,
+			email,
+			phone,
+			question,
+			answer,
+			lastlogintime,
+			lastloginip,
+			regeistdate,
+			userlevel,
+			islock;
+			description,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{username},
+			#{usernickname},
+			#{password},
+			#{email},
+			#{phone},
+			#{question},
+			#{answer},
+			#{lastlogintime},
+			#{lastloginip},
+			#{regeistdate},
+			#{userlevel},
+			#{islock},
+			#{description},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE shop_user SET 	
+			username = #{username},
+			usernickname = #{usernickname},
+			password = #{password},
+			email = #{email},
+			phone = #{phone},
+			question = #{question},
+			answer = #{answer},
+			lastlogintime = #{lastlogintime},
+			lastloginip = #{lastloginip},
+			regeistdate = #{regeistdate},
+			userlevel = #{userlevel},
+			islock = #{islock},
+			description = #{description}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE shop_user SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="islock" parameterType="ShopUser">
+		UPDATE shop_user SET 
+			islock = #{islock}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

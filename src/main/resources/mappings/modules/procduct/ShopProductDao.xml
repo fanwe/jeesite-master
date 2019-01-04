@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.procduct.dao.ShopProductDao">
+    
+	<sql id="shopProductColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.subtitle AS "subtitle",
+		a.category AS "category",
+		a.main_img AS "mainImg",
+		a.detail AS "detail",
+		a.price AS "price",
+		a.stock AS "stock",
+		a.status AS "status",
+		a.brand AS "brand",
+		a.warehouse AS "warehouse",
+		a.description AS "description",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		b.name AS "categoryname",
+		c.name AS "brandName",
+		d.name AS "warehouseName"
+	</sql>
+	
+	<sql id="shopProductJoins">
+		left join shop_category b on b.id = a.category
+		left join shop_brand c on c.id = a.brand
+		left join shop_warehose d on d.id = a.warehouse
+	</sql>
+    
+	<select id="get" resultType="ShopProduct">
+		SELECT 
+			<include refid="shopProductColumns"/>
+		FROM shop_product a
+		<include refid="shopProductJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ShopProduct">
+		SELECT 
+			<include refid="shopProductColumns"/>
+		FROM shop_product a
+		<include refid="shopProductJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="subtitle != null and subtitle != ''">
+				AND a.subtitle = #{subtitle}
+			</if>
+			<if test="category != null and category != ''">
+				AND a.category = #{category}
+			</if>
+			<if test="mainImg != null and mainImg != ''">
+				AND a.main_img = #{mainImg}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ShopProduct">
+		SELECT 
+			<include refid="shopProductColumns"/>
+		FROM shop_product a
+		<include refid="shopProductJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO shop_product(
+			id,
+			name,
+			subtitle,
+			category,
+			main_img,
+			detail,
+			price,
+			stock,
+			status,
+			brand,
+			warehouse,
+			description,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{name},
+			#{subtitle},
+			#{category},
+			#{mainImg},
+			#{detail},
+			#{price},
+			#{stock},
+			#{status},
+			#{brand},
+			#{warehouse},
+			#{description},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE shop_product SET 	
+			name = #{name},
+			subtitle = #{subtitle},
+			category = #{category},
+			main_img = #{mainImg},
+			detail = #{detail},
+			price = #{price},
+			stock = #{stock},
+			status = #{status},
+			brand = #{brand},
+			warehouse = #{warehouse},
+			description = #{description},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE shop_product SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

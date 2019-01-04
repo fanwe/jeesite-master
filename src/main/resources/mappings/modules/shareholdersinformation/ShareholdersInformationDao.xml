@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.shareholdersinformation.dao.ShareholdersInformationDao">
+    
+	<sql id="shareholdersInformationColumns">
+		a.id AS "id",
+		a.num AS "num",
+		a.shareholder_name AS "shareholderName",
+		a.shares_num_start AS "sharesNumStart",
+		a.ownership_change AS "ownershipChange",
+		a.shares_num_end AS "sharesNumEnd",
+		a.shareholding_ratio AS "shareholdingRatio",
+		a.shares_num_limit_end AS "sharesNumLimitEnd",
+		a.shares_num_infinte_end AS "sharesNumInfinteEnd",
+		a.company_introduction_id AS "companyIntroductionId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="shareholdersInformationJoins">
+	</sql>
+    
+	<select id="get" resultType="ShareholdersInformation">
+		SELECT 
+			<include refid="shareholdersInformationColumns"/>
+		FROM shareholders_information a
+		<include refid="shareholdersInformationJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ShareholdersInformation">
+		SELECT 
+			<include refid="shareholdersInformationColumns"/>
+		FROM shareholders_information a
+		<include refid="shareholdersInformationJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ShareholdersInformation">
+		SELECT 
+			<include refid="shareholdersInformationColumns"/>
+		FROM shareholders_information a
+		<include refid="shareholdersInformationJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO shareholders_information(
+			id,
+			num,
+			shareholder_name,
+			shares_num_start,
+			ownership_change,
+			shares_num_end,
+			shareholding_ratio,
+			shares_num_limit_end,
+			shares_num_infinte_end,
+			company_introduction_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{num},
+			#{shareholderName},
+			#{sharesNumStart},
+			#{ownershipChange},
+			#{sharesNumEnd},
+			#{shareholdingRatio},
+			#{sharesNumLimitEnd},
+			#{sharesNumInfinteEnd},
+			#{companyIntroductionId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE shareholders_information SET 	
+			num = #{num},
+			shareholder_name = #{shareholderName},
+			shares_num_start = #{sharesNumStart},
+			ownership_change = #{ownershipChange},
+			shares_num_end = #{sharesNumEnd},
+			shareholding_ratio = #{shareholdingRatio},
+			shares_num_limit_end = #{sharesNumLimitEnd},
+			shares_num_infinte_end = #{sharesNumInfinteEnd},
+			company_introduction_id = #{companyIntroductionId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE shareholders_information SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
