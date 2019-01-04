@@ -3,8 +3,6 @@
  */
 package com.thinkgem.jeesite.modules.companyinfoyear.web;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -86,9 +84,8 @@ public class CompanyIntroductionYearController extends BaseController {
 		String path="D:\\第8批次\\";
 		//String path="D:\\PDF文件\\匹配不到的字段所在的文件\\公司中文名称\\";
 		String[] pdfList = ParsePDFFileUtile.getPDFList(path);
-		System.out.println("==================="+pdfList.length+"=========================================");
 		//有问题的文件存放的目录
-		String pdfForImgSrc = "D:\\问题文件\\";
+		String pdfForImgSrc = "D:\\8批次\\问题文件\\";
 		//遍历pdf文件夹里面的文件列表
 		for (int i = 0; i < pdfList.length; i++) {
 			int findByRecordCount = this.companyIntroductionYearService.findByRecordCount(pdfList[i]);
@@ -276,7 +273,7 @@ public class CompanyIntroductionYearController extends BaseController {
 									//向数据库插入年报对象
 									this.companyIntroductionYearService.save(companyYear);
 									ParsePDFFileUtile.errorFiledPross(path+pdfList[i],pdfForImgSrc+ParsePDFFileUtile.PROSS_SUCCESS_FILE+"\\",pdfList[i]);
-									//FileUtils.deleteFile(path+pdfList[i]);
+									FileUtils.deleteFile(path+pdfList[i]);
 									
 								} catch (Exception e) {
 									ParsePDFFileUtile.errorFiledPross(path+pdfList[i],pdfForImgSrc+ParsePDFFileUtile.EXCEPTION_FILE,pdfList[i]);
@@ -288,6 +285,7 @@ public class CompanyIntroductionYearController extends BaseController {
 							}else {
 								ParsePDFFileUtile.errorFiledPross(path+pdfList[i],pdfForImgSrc+ParsePDFFileUtile.UNREADABLE_CODE,pdfList[i]);
 								logger.debug("【"+pdfList[i]+"】文件为乱码图片文件");
+								FileUtils.deleteFile(path+pdfList[i]);
 								continue;
 							}
 
@@ -299,11 +297,13 @@ public class CompanyIntroductionYearController extends BaseController {
 							logger.debug("PDF文件内容为图片");
 							//存放都为图片内容的pdf文件
 							ParsePDFFileUtile.errorFiledPross(path+pdfList[i], pdfForImgSrc+ParsePDFFileUtile.FILE_CONTENT_IMAGE, pdfList[i]);
+							FileUtils.deleteFile(path+pdfList[i]);
 							continue;
 						}
 					}else {
 						ParsePDFFileUtile.errorFiledPross(path+pdfList[i], pdfForImgSrc+ParsePDFFileUtile.FILE_CONTENT_FAIL, pdfList[i]);
 						logger.debug("PDF文件内容已损坏!");
+						FileUtils.deleteFile(path+pdfList[i]);
 						continue;
 
 					}
@@ -311,6 +311,7 @@ public class CompanyIntroductionYearController extends BaseController {
 				}else {
 					ParsePDFFileUtile.errorFiledPross(path+pdfList[i], pdfForImgSrc+ParsePDFFileUtile.FILE_CONTENT_FAIL, pdfList[i]);
 					logger.debug("PDF文件内容已损坏!");
+					FileUtils.deleteFile(path+pdfList[i]);
 					continue;
 				}
 			}
